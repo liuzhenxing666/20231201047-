@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易百科 - API测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .api-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>简易百科 - API测试页面</h1>
+        <p>后端服务器运行在: http://localhost:8000</p>
+        
+        <div class="api-section">
+            <h3>分类API测试</h3>
+            <button onclick="testCategories()">测试分类列表</button>
+            <div id="categories-result" class="result"></div>
+        </div>
+
+        <div class="api-section">
+            <h3>词条API测试</h3>
+            <button onclick="testEntries()">测试词条列表</button>
+            <div id="entries-result" class="result"></div>
+        </div>
+
+        <div class="api-section">
+            <h3>创建新词条</h3>
+            <input type="text" id="entry-title" placeholder="词条标题" style="padding: 8px; margin: 5px; width: 200px;">
+            <textarea id="entry-content" placeholder="词条内容" style="padding: 8px; margin: 5px; width: 100%; height: 100px;"></textarea>
+            <button onclick="createEntry()">创建词条</button>
+            <div id="create-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+
+        async function testCategories() {
+            const resultDiv = document.getElementById('categories-result');
+            resultDiv.innerHTML = '正在请求分类数据...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/categories/`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<span class="success">请求成功!</span><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">请求失败: ${error.message}</span>`;
+            }
+        }
+
+        async function testEntries() {
+            const resultDiv = document.getElementById('entries-result');
+            resultDiv.innerHTML = '正在请求词条数据...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/entries/`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<span class="success">请求成功!</span><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">请求失败: ${error.message}</span>`;
+            }
+        }
+
+        async function createEntry() {
+            const title = document.getElementById('entry-title').value;
+            const content = document.getElementById('entry-content').value;
+            const resultDiv = document.getElementById('create-result');
+            
+            if (!title || !content) {
+                resultDiv.innerHTML = '<span class="error">请填写标题和内容</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '正在创建词条...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/entries/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        content: content,
+                        category: 1  // 默认分类
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<span class="success">创建成功!</span><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    // 清空输入框
+                    document.getElementById('entry-title').value = '';
+                    document.getElementById('entry-content').value = '';
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `<span class="error">创建失败: ${response.status} ${error}</span>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">请求失败: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

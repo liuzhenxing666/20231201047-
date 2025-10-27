@@ -1,0 +1,27 @@
+{
+  "name": "baike-frontend",
+  "version": "1.0.0",
+  "description": "简易百科前端项目",
+  "scripts": {
+    "serve": "node nodejs_local/npm/bin/npm-cli.js run serve-local",
+    "serve-local": "vue-cli-service serve",
+    "build": "node nodejs_local/npm/bin/npm-cli.js run build-local",
+    "build-local": "vue-cli-service build",
+    "lint": "node nodejs_local/npm/bin/npm-cli.js run lint-local",
+    "lint-local": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4",
+    "axios": "^1.5.0"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "@vue/compiler-sfc": "^3.3.4"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
